@@ -10,3 +10,23 @@
 		let cons x y = x y
 	}
 *)
+(*
+Definir el conjunto de todas las expresiones aritmeticas	
+cada entero o cada varaible es una expresion, un conjunto de expresiones es una expresion
+type expr =
+ Int of int
+ | Var of string
+ | Sum of expr * expr
+ | Diff of expr * expr
+ | Mult of expr * expr
+ | Div of expr * expr
+*)
+(*Arboles binarios*)
+let rec tree2list = function
+Empty -> []
+| Tr(n,left.rigth) -> (tree2list.left) @ (n::(tree2list.rigth))(*Atencion en donde metes n (n::)*)
+
+let rec altezza = function
+ Empty -> 
+ | Tr(n,t1,t2) ->
+
