@@ -17,8 +17,8 @@ let cases str =
 (*Crea la tupla de los digitos correspondientes en forma de cadena*)
 let digits x =
 	match x<0 with
-	| true-> cases(string_of_int (-x)),(string_of_int (-x)).[(String.length(string_of_int (-x)))-1]
-	| _ ->cases(string_of_int x),(string_of_int x).[(String.length(string_of_int x))-1]
+	| true -> cases(string_of_int (-x)),(string_of_int (-x)).[(String.length(string_of_int (-x)))-1]
+	| _ -> cases(string_of_int x),(string_of_int x).[(String.length(string_of_int x))-1]
 ;;
 
 
