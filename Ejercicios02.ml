@@ -9,13 +9,16 @@ dos ultimas cifras de un numero entero dado
 let cases str =
 	(*Determina si es un numero de un solo digito por
 	lo que pindria un 0*)
-	if (length str) > 2 then
-		"0" 
+	if (String.length str) < 2 then
+		'0' 
 	else
-		str.[(length str)-2]
+		str.[(String.length str)-2]
 ;;
 (*Crea la tupla de los digitos correspondientes en forma de cadena*)
-let digits x = cases(string_of_int x),(string_of_int x).[(length srt -1)]
+let digits x =
+	match x<0 with
+	| true-> cases(string_of_int (-x)),(string_of_int (-x)).[(String.length(string_of_int (-x)))-1]
+	| _ ->cases(string_of_int x),(string_of_int x).[(String.length(string_of_int x))-1]
 ;;
 
 
