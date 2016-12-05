@@ -48,11 +48,11 @@ let rec max_lista lst num =
 	match lst with
 	| [] -> num
 	| _ -> choose lst num
-and choose lst num =
+	and choose lst num =
 	if get_fist lst > num then
-		max_lista (cut lst) (get_fist lst)
-	else
-		max_lista (cut lst) num
+	max_lista (cut lst) (get_fist lst)
+else
+	max_lista (cut lst) num
 ;;
 
 (** Funzione per vedere si la lista è vuota *)
@@ -77,7 +77,7 @@ let add x = x+1
 ;;
 
 let rec print_list = function
- [] -> Printf.printf "-\n"
+[] -> Printf.printf "-\n"
 | head::tail -> Printf.printf "%d," head ; print_list tail
 ;; 
 
@@ -89,12 +89,30 @@ let rec drop_rec n cout lst =
 
 let drop n lst =
 	if n >= (length lst) then
-		[]
-	else
-		drop_rec n 0 lst
+	[]
+else
+	drop_rec n 0 lst
 ;;
 
 print_list (drop 3 de_7);;
 print_list (drop 5 de_14);;
 print_list (drop 90 de_21);;
 Printf.printf "\n--------------------------\n"
+
+(*
+append: ’a list -> ’a list -> ’a list. Se @ non fosse prede-
+finito, come si potrebbe definire (utilizzando solo i costruttori delle
+liste)?
+*)
+
+let rec insert_end lst element =
+	match lst with
+	| [] -> [element]
+	| head::tail -> head :: (insert_end tail element)
+;;
+
+let rec concat lst_1 lst_2 =
+	match lst_2 with
+	| [] -> []
+	| x::tail -> insert_end(x tail)
+;; 
