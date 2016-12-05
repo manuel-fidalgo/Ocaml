@@ -62,7 +62,7 @@ let rec max_list lst =
 	| _ -> max_lista lst 0
 ;;
 
-Printf.printf "De 7 %d\n" (max_lista de_7)  ;;
+Printf.printf "De 7 %d\n" (max_lista de_7);;
 Printf.printf "De 14 %d\n" (max_lista de_14);;
 Printf.printf "De 21 %d\n" (max_lista de_21);;
 Printf.printf "\n--------------------------\n"
