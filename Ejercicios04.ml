@@ -1,8 +1,11 @@
-(*
+
 let clear x = Sys.command "clear"+x
 ;;
-clear 0;;
+
+(*
+ clear 0;;
 *)
+
 (*Esercizi porposti 4*)
 (* length 'a lsit -> int *)
 let cut lst = 
@@ -156,9 +159,9 @@ Printf.printf "\n--------------------------\n";;
 let rec pair_with_rec n lst_1 lst_2=
 	match lst_1 with
 	| [] -> lst_2
-	| head::tail -> (n,head)::lst_2;
-					pair_with_rec n tail lst_2
+	| head::tail -> pair_with_rec n tail ((n,head)::lst_2)
 ;;
+
 let pair_with n lst =
 	pair_with_rec n lst []
 ;;
@@ -169,4 +172,65 @@ print_list_tuple (pair_with 5 de_7);;
 print_list_tuple (pair_with 0 de_14);;
 print_list_tuple (pair_with 2 de_21);;
 *)
+Printf.printf "Not implemented the Print method yet...\n";;
 Printf.printf "\n--------------------------\n";;
+
+(*
+	nondec devuelve true si todos los elementos estan en ordenn creciente, false en otro caso
+*)
+let lst_1 = 1::2::3::4::5::[];;
+let lst_2 = 5::4::3::2::1::[];;
+let lst_3 = 1::2::3::4::6::5::[];;
+
+
+
+let rec nondec_rec lst =
+	if (length lst) <= 2 then
+		match lst with
+		| fst::scd::tail -> if fst > scd then false else true
+		| _ -> true (*ya que se considera vacia o de 1 elemetno*)
+	else
+		match lst with
+		| fst::scd::tail -> if fst > scd then false else nondec_rec (scd::tail)
+		| _ -> failwith "Fail 02"
+;;
+
+Printf.printf "\n-------Ejercicio 8--------\n";;
+
+Printf.printf " Lista true es-> %b\n" (nondec_rec lst_1);;
+Printf.printf " Lista false es-> %b\n" (nondec_rec lst_2);;
+Printf.printf " Lista false es-> %b\n" (nondec_rec lst_3);;
+Printf.printf " Lista [] es-> %b\n" (nondec_rec []);;
+Printf.printf " Lista [1] es-> %b\n" (nondec_rec [1]);;
+
+Printf.printf "\n--------------------------\n";;
+
+(*
+	min_dei_max int list list -> int retorna el valor minimo de entre todos los maximos de cada uno de las listas
+
+*)
+let rec get_max_rec lst ant =
+	match lst with
+	| _ -> 0
+;;
+
+let rec get_max lst =
+	match lst with
+	| head::tail -> get_max_rec lst head
+	| x,_ -> head 
+;;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
