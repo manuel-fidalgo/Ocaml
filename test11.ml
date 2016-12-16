@@ -106,8 +106,32 @@ let rec append lst_1 lst_2 =
 ;;
 append l1 l2;;
 
+(*----------
+  - Unions -
+  ----------*)
+(*El identificador de  cada unos de los subtipos tiene que estar en mayuscula*)
+(*UN type engloba diferentes tipos primitivos, pero solamente uno, no la mezcla de ellos*)
+(*Un numero puede ser cero, un entero o un real*)
+type number =
+	| Zero 
+	| Integer of int
+	| Real of float 
+;;
+let entero = Integer 3;; (*Creamos un "objeto" del typo numero con valor int = 3*)
+let cero = Zero;;
+let decimal = Real 3.141592;;
+(*Algunos de las estructuras de datos mas basicas que previamente hemos implementado*)
 
+type 'a linked_list =
+  | Element of 'a * 'a linked_list
+  | Nula
+;;
+let lst = Element(3,Element(4,Element(5,Element(6,Nula))));;
 
+type 'a tree =
+	|Node of 'a * 'a tree * 'a tree
+	|Leaf
+;;
 
 
 
