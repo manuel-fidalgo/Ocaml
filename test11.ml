@@ -133,6 +133,84 @@ type 'a tree =
 	|Leaf
 ;;
 
+(*Arbol binario->
+        a
+     b        c 
+  d    e     ø  ø
+ ø ø  ø ø
+
+*)
+let arbol = Node('a',
+				Node('b',
+					Node('d',Leaf,Leaf),
+					Node('e',Leaf,Leaf)),
+				Node('c',Leaf,Leaf)) ;;
+
+(*Funciones auxiliares para sacar cada uno de los diversos elementos de un arbol*)
+let derecha (_,_,dch) = dch ;;
+let izquierda (_,izq,_) = izq ;;
+let value (v,_,_) = v ;;
+
+let rec cardinality_leafs arbol =
+	match arbol with
+	| Leaf -> 1
+	| Node(_,izq,dch) -> cardinality_leafs dch + cardinality_leafs izq
+;;
+
+let rec cardinality_nodes arbol =
+	match arbol with
+	| Leaf -> 0
+	| Node(_,izq,dch) -> cardinality_nodes izq + cardinality_nodes dch + 1
+;;
+
+Printf.printf "-----\nEl numero de hojas que tiene este arbol es %d\n-----\n"
+(cardinality_leafs arbol);;
+Printf.printf "-----\nEl numero de nodos que tiene este arbol es %d\n-----\n"
+(cardinality_nodes arbol);;
+
+
+let queue = Queue.create ();;(*Para crear la lista toma el tipo unit ()*)
+(*queue sera la cola que almacenara los hijos
+sobre los que vayamos trabajando*)
+
+exception FailLeaf;;
+
+let rec busqueda_profundidad_inorden caracter arbol =
+	let cardinality_nodes_arbol = 
+
+let rec busqueda_profundidad_inorden_rec caracter arbol_busqueda =
+	match arbol_busqueda with
+	| Node(value,izq,dch) -> if value == caracter then
+								value
+							else
+								selector_direcion caracter izq dch
+
+	|Leaf -> raise FailLeaf (*No se puede buscar sobre ninguna hoja*)
+
+and selector_direcion caracter arbol_izq arbol_dch =
+	match arbol_izq,arbol_dch with
+	| (Node(_,_,_) , _) -> busqueda_profundidad_inorden_rec caracter arbol_izq;
+	| (_ , Node(_,_,_)) -> busqueda_profundidad_inorden_rec caracter arbol_dch;
+	| (Leaf , Leaf) ->  'x'(*Hemos llegado a un nodo sin hijos y no es el que buscamos, deberiamos de dejar que vuelva atras sonbre su nodo padre y siga con la iteracion*)
+;;
+
+Printf.printf "\nBusqueda de %c es %c\n" 'a' (busqueda_profundidad_inorden 'a' arbol);;
+Printf.printf "\nBusqueda de %c es %c\n" 'b' (busqueda_profundidad_inorden 'b' arbol);;
+Printf.printf "\nBusqueda de %c es %c\n" 'c' (busqueda_profundidad_inorden 'c' arbol);;
+Printf.printf "\nBusqueda de %c es %c\n" 'd' (busqueda_profundidad_inorden 'd' arbol);;
+Printf.printf "\nBusqueda de %c es %c\n" 'e' (busqueda_profundidad_inorden 'e' arbol);; 
+Printf.printf "\nBusqueda de %c es %c\n" 'f' (busqueda_profundidad_inorden 'f' arbol);; 
+
+
+
+
+
+
+
+
+
+
+
 
 
 
