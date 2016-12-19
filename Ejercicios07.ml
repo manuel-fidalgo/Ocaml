@@ -46,3 +46,45 @@ let rec esegui posizione azoine_list =
 								esegui (avanti posizione (get_dir head)) tail 
 	| [] , (_,_,_) -> posizione
 ;;
+
+
+(*-------------------EJERCICIO 3-------------------*)
+type chiave = Aperta | Chiusa
+type cassaforte = chiave list
+(*
+	En la caja fuerte solo se puede girar la primer llave
+	o la primera llave despues de una cerrada
+*)
+exception NonKeyAvaliable;;
+
+let gira_prima lst =
+	match lst with
+	| head::tail -> if head = Chiusa then
+						Aperta::tail
+					else
+						Chiusa::tail
+	| [] -> raise NonKeyAvaliable
+;;
+
+let rec gira_dopo_chiusa_rec lst =
+	
+;;
+
+let giraDopoChiusa lst =
+	match lst with
+	| head::tail -> gira_dopo_chiusa_rec head tail
+	| [] -> raise NonKeyAvaliable
+;;
+
+
+
+
+
+
+
+
+
+
+
+
+
