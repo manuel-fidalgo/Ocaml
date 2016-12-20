@@ -55,7 +55,7 @@ type cassaforte = chiave list
 	En la caja fuerte solo se puede girar la primer llave
 	o la primera llave despues de una cerrada
 *)
-exception NonKeyAvaliable;;
+exception NoKeyAvaliable;;
 
 let gira_prima lst =
 	match lst with
@@ -63,28 +63,39 @@ let gira_prima lst =
 						Aperta::tail
 					else
 						Chiusa::tail
-	| [] -> raise NonKeyAvaliable
+	| [] -> raise NoKeyAvaliable
+;;
+(*Devuelve en el que queda la segunda llave*)
+let rec cambiar_valor scd =
+		if scd = Aperta then
+			Chiusa
+		else
+		 	Aperta
+;;
+let flip key =
+	if key = Chiusa then
+	 	Aperta
+	 else
+	 	Chiusa
 ;;
 
-let rec gira_dopo_chiusa_rec lst =
-	
-;;
+(* A C C A C A C C*)
+let rec gira_dopo_chiusa_rec lst acumm flag =
+	match flag,lst with
+		| false , head::scd::tail -> if head = Chiusa then
+										(*Cambiamos elflag de encontrado*)
+										gira_dopo_chiusa_rec tail (flip scd)::head::acumm true
+									else
+										gira_dopo_chiusa_rec scd::tail head::acumm false
+										
+		| true , head::tail -> gira_dopo_chiusa_rec tail head::acumm true
+		| true , [] -> []
+		| false , [] -> []	
+;;	
 
 let giraDopoChiusa lst =
 	match lst with
-	| head::tail -> gira_dopo_chiusa_rec head tail
-	| [] -> raise NonKeyAvaliable
+	| head::tail -> List.reverse (gira_dopo_chiusa_rec lst [])
+	| [] -> raise NoKeyAvaliable
 ;;
-
-
-
-
-
-
-
-
-
-
-
-
 
