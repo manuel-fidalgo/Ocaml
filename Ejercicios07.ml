@@ -48,54 +48,41 @@ let rec esegui posizione azoine_list =
 ;;
 
 
-(*-------------------EJERCICIO 3-------------------*)
-type chiave = Aperta | Chiusa
-type cassaforte = chiave list
+(*-------------------
+  -   EJERCICIO 3   - 
+  -------------------*)
+
+
+
+  type chiave = Aperta | Chiusa
+  type cassaforte = chiave list
 (*
 	En la caja fuerte solo se puede girar la primer llave
 	o la primera llave despues de una cerrada
 *)
 exception NoKeyAvaliable;;
 
+let rec gira scd =
+	match scd with
+	| Chiusa -> Aperta
+	| Aperta -> Chiusa
+;;
+
 let gira_prima lst =
 	match lst with
-	| head::tail -> if head = Chiusa then
-						Aperta::tail
-					else
-						Chiusa::tail
+	| head::tail -> (gira head)::tail
 	| [] -> raise NoKeyAvaliable
 ;;
+
 (*Devuelve en el que queda la segunda llave*)
-let rec cambiar_valor scd =
-		if scd = Aperta then
-			Chiusa
-		else
-		 	Aperta
-;;
-let flip key =
-	if key = Chiusa then
-	 	Aperta
-	 else
-	 	Chiusa
-;;
 
 (* A C C A C A C C*)
-let rec gira_dopo_chiusa_rec lst acumm flag =
-	match flag,lst with
-		| false , head::scd::tail -> if head = Chiusa then
-										(*Cambiamos elflag de encontrado*)
-										gira_dopo_chiusa_rec tail (flip scd)::head::acumm true
-									else
-										gira_dopo_chiusa_rec scd::tail head::acumm false
-										
-		| true , head::tail -> gira_dopo_chiusa_rec tail head::acumm true
-		| true , [] -> []
-		| false , [] -> []	
-;;	
 
-let giraDopoChiusa lst =
+let rec gira_dopo_chiusa lst =
 	match lst with
-	| head::tail -> List.reverse (gira_dopo_chiusa_rec lst [])
-	| [] -> raise NoKeyAvaliable
-;;
+	| Chiusa::x::tail -> Chiusa::(gira x)::tail
+	| Aperta::tail -> Aperta::(gira_dopo_chiusa tail) 
+	| _ -> raise NoKeyAvaliable
+;;	
+let cassa = Aperta::Chiusa::Chiusa::Aperta::Chiusa::[];;
 
