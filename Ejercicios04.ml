@@ -123,6 +123,14 @@ let reverse lst =
 	List.rev lst
 ;;
 
+let rec reverse_aux lst aux =
+	match lst with
+	| [] -> aux
+	| head::tail -> reverse_aux tail (head::aux)
+;;
+let reverse lst = reverse_aux lst [];;
+
+
 let rec insert_end lst element =
 	match lst with
 	| [] -> [element]

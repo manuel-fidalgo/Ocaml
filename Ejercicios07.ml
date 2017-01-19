@@ -7,7 +7,7 @@ type azione = Gira | Avanti of int
 siniestra + destra
 	     giu
 *)
-(*Gira en sentido antihorario*)
+(*Gira en sentido horario*)
 let gira = function
 	| Su -> Destra
 	| Giu -> Sinistra

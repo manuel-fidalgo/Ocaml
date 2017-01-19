@@ -30,7 +30,8 @@ let combine lst_1 lst_2 =
 		reverse (combine_rec lst_1 lst_2 []) []
 ;;
 
-(*TESTING ->
+(*
+TESTING ->
 
 ----- val combine : 'a list -> 'b list -> ('a * 'b) list = <fun> -----
 
@@ -82,3 +83,16 @@ let rec intpairs_rec lst_1 lst_2 acumm =
 	| [] -> acumm
 ;;
 let intpairs n = intpairs_rec (create_list n) (create_list n) [];;
+
+
+
+
+
+
+
+
+
+
+
+
+
