@@ -193,7 +193,7 @@ type 'a sostituzione = ('a * 'a tree) list;;
 *)
 exception ThereIsntPath
 
-let rec path_aux tree lst lst_aux=
+let rec path_aux tree lst lst_aux =
   match tree with
   | Empty -> []
   | Tr(x,Empty,Empty) -> 
@@ -215,3 +215,20 @@ path_coprente l (1::3::6::12::[]);; (*true -> int list = [1; 3; 6; 12]*)
 path_coprente l (1::3::6::13::[]);; (*true -> int list = [1; 3; 6; 13]*)
 path_coprente l (1::2::3::5::[]);; (*false*)
 path_coprente l (1::2::3::4::5::6::7::8::9::[]);; (*true -> int list = [1; 2; 4; 8]*)
+
+type col = Rosso | Giallo | Verde | Blu
+type 'a col_assoc = (col * 'a list) list
+
+let assoc = [(Rosso,[1;2;4;7;10]); (Giallo,[3;8;11]);
+(Verde,[0;5;6;13]); (Blu,[9;12;14;15])]
+
+let rec colore value assoc =
+  match assoc with
+  | x::tail -> (match x with
+                |col,lst -> if List.mem value lst then
+                              col
+                            else
+                              colore value tail)
+
+  | [] -> failwith "Not such element"
+;;
