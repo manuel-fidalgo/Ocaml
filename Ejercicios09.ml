@@ -1,4 +1,4 @@
-type 'a tree = Empty | Tr of 'a * 'a tree list
+type 'a tree = Ntree of 'a * 'a tree list
 
 type multi_expr =
   MultiInt of int
@@ -36,8 +36,32 @@ let rec subst exp1 name exp2 =
 	| MultiDiff(e1,e2) -> MultiDiff(subst e1 name exp2,subst e2 name exp2)
 	| MultiDiv(e1,e2) -> MultiDiv(subst e1 name exp2,subst e2 name exp2)
 
-	| MultiSum lst -> MultiSum List.map (funcion e -> subst e name exp2) lst;;
-	| MultiMult lst -> MultiMult List.map (funcion e -> subst e name exp2) lst;;
+	| MultiSum lst -> MultiSum (List.map (function e -> subst e name exp2) lst)
+	| MultiMult lst -> MultiMult(List.map (function e -> subst e name exp2) lst)
 
 	| _ -> exp1
 ;;
+type 'a ntree = Ntree of 'a * 'a ntree list;;
+let leaf x = Ntree(x,[]);;
+
+let t = Ntree(1,[Ntree(2,[Ntree(3,[leaf 4;
+                          leaf 5]);
+                    Ntree(6,[leaf 7]);
+                    leaf 8]);
+              leaf 9;
+              Ntree(10,[Ntree(11,[leaf 12;
+                            leaf 13;
+                            leaf 14]);
+                     leaf 15;
+                     Ntree(16,[leaf 17;
+                            Ntree(18,[leaf 19;
+                                   leaf 20])])])]);;
+(*preorden root,left...rigth*)
+let rec preorden tree =
+	match tree with
+	| Tr(valor,lst_hijos) -> valor::(List.map (function e -> preorden e) lst_hijos)
+;;
+let rec postorden tree =
+	match tree with
+	| Tr(valor,lst_hijos) -> (List.map (function e -> preorden e) lst_hijos)@[valor]
+;; 
