@@ -157,12 +157,90 @@ let rec listaguida lst tree =
 		| Ntree(x,children) -> listaguida rest (getChildrenN x children)
 	)
 ;;
+
 (*
 	foglia_costo: ’int ntree -> (int * int)
 	devuelve la etiqueta y el coste de la hoja mas pesada
 *)
+
+
 let rec list_foglia_costo tree current_costo = 
 	match tree with
-	| Ntree(x,lst) -> List.map (fun x -> list_foglia_costo x current_costo) lst 
-	| Ntree(x,[]) -> (x,current_costo)
-;; 
+	| Ntree(x,[]) -> [(x,current_costo)]
+	| Ntree(x,lst) -> iter_ (x+current_costo) lst
+and iter_ cost children =
+	match children with
+	| [] -> []
+	| h::tail ->  (list_foglia_costo h cost) @ (iter_ cost tail)
+
+
+let fst (x,y) = x 
+let scd (x,y) = y 
+
+let rec getMax lst max =
+	match lst with
+	| [] -> max
+	| h::tail -> if (scd h) > (scd max) then
+					getMax tail h
+				else
+					getMax tail max
+
+let foglia_costo tree =
+	getMax (list_foglia_costo tree 0) (0,0)
+;;
+
+
+let l = Ntree(1,[Ntree(2,[Ntree(3,[]);
+						Ntree(4,[])]);
+				Ntree(3,[Ntree(5,[]);
+						Ntree(6,[
+							Ntree(8,[])]);
+						Ntree(7,[])])]);;
+(*
+	ramo_da_lista: 'a ntree -> 'a list -> 'a -> 'a list
+	
+	Scrivere una funzione ramo_da_lista: ’a ntree -> ’a list -> ’a ->
+	’a list che, dato un albero T, una lista L senza ripetizioni e un’etichetta
+	k, riporti, se esiste, un ramo di T dalla radice a una foglia etichettata da k
+	che passi per tutti gli elementi di L esattamente una volta e contenga solo
+	nodi etichettati da elementi di L (in pratica, il cammino deve essere una
+	permutazione di L). Se un tale cammino non esiste, la funzione solleverà
+	un’eccezione.
+*)
+exception NoPath;;
+
+(*true si todos los elementos de lst1 estan contenidos en lst2*)
+let rec is_contained lst1 lst2 = 
+	match lst1 with
+	| [] -> true
+	| head::tail -> (List.mem head lst2) && (is_contained tail lst2)
+;;
+
+let rec ramo_da_lista_aux tree lst leaf lst_acumm =
+	match tree with
+	| Ntree(x,[]) -> if (x = leaf) && (is_contained lst lst_acumm) && (is_contained lst_acumm lst) then
+							lst_acumm
+						else
+							raise NoPath
+	(*Iteramos sobre los hijos*)						
+	| Ntree(x,children) -> it children tree lst leaf (lst_acumm@x)
+	
+and it children tree lst leaf lst_acumm =
+	
+	match children with
+	| [] -> []
+	| head::tail -> 
+			try ramo_da_lista_aux head lst leaf lst_acumm
+			with
+			| _ -> it tail tree lst leaf lst_acumm
+;;
+
+let ramo_da_lista tree lst leaf = ramo_da_lista_aux tree lst leaf [];;
+
+
+
+
+
+
+
+
