@@ -207,6 +207,8 @@ let l = Ntree(1,[Ntree(2,[Ntree(3,[]);
 	permutazione di L). Se un tale cammino non esiste, la funzione solleverà
 	un’eccezione.
 *)
+
+(*NO TERMINADO*)
 exception NoPath;;
 
 (*true si todos los elementos de lst1 estan contenidos en lst2*)
@@ -224,7 +226,7 @@ let rec ramo_da_lista_aux tree lst leaf lst_acumm =
 							raise NoPath
 	(*Iteramos sobre los hijos*)						
 	| Ntree(x,children) -> it children tree lst leaf (lst_acumm@x)
-	
+
 and it children tree lst leaf lst_acumm =
 	
 	match children with
@@ -237,10 +239,48 @@ and it children tree lst leaf lst_acumm =
 
 let ramo_da_lista tree lst leaf = ramo_da_lista_aux tree lst leaf [];;
 
+(*
+	same_structure: ’a ntree -> ’b ntree -> bool
+*)
+let rec same_structure tree1 tree2 =
+	match tree1,tree2 with
+	| Ntree(x,[]),Ntree(y,[]) -> if x = y then true else false
+	| Ntree(x,children1),Ntree(y,children2) ->
+					if (List.length children1) <> (List.length children2) then
+						false
+					else
+						iterate children1 children2
+	| _,_ -> false
+and iterate children1 children2 =
+	match children1,children2 with
+	| [],[] -> true
+	| x::tail1,y::tail2-> (same_structure x y) && (iterate tail1 tail2)
+;;
+(*path_non_pred: ('a -> bool) -> 'a ntree -> 'a list*)
+(*Devuelve un camino desde la raiz a una hoja que ninguno de sus elementos satisfaga el predicado p*)
 
+let rec path_non_pred f tree =
+	match tree with
+	| Ntree(x,[]) -> 
+					if(f x) then
+						raise NoPath
+					else
+						[x]
 
+	| Ntree(x,children) -> 
+						if (f x) then
+							raise NoPath
+						else
+							x::(_iter children f)
+and _iter children f =
+	match children with
+	 | [] -> []
+	 | head::tail -> 
+	 				try (path_non_pred f head) 
+	 				with _ -> _iter tail f
+;;
 
-
-
+path_non_pred (fun x -> (x mod 2) = 0) l;; (*[1;3;5]*)
+path_non_pred (fun x -> (x mod 2) = 1) l;; (*NoPath*)
 
 
