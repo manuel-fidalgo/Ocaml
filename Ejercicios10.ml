@@ -26,8 +26,9 @@ let graph = (1,2)::(2,4)::(1,4)::(4,3)::(3,5)::[];;
 let c = (1,2)::(2,3)::(3,4)::(4,1)::[];;
 let l = [(1,4);(2,4);(3,4);(4,5)];;
 let m = [(1,4);(2,4);(3,4);(4,5);(5,6);(6,7);(7,1)];;
+let e = [(1,3);(1,2);(2,3);(3,4);(4,1);(3,5);(3,6);(6,1)];;
 
-
+(*--------------------EJ:1----------------------------*)
 let rec test_connessi_rec grafo actual fin visitados =
 																  (*añadimos el nodo padre a visitados*)
 		iter_list_children (sucesores actual grafo) grafo actual fin 
@@ -46,7 +47,6 @@ and iter_list_children children grafo actual fin visitados =
 
 let test_connessi grafo init fin = (*Inicializamos sin ningun nodo visitado*)
 	test_connessi_rec grafo init fin [];;
-
 
 let fstnode grafo =
 	match grafo with
@@ -73,32 +73,11 @@ let existe_ciclo grafo = (*Inicializamos sin ningun nodo visitado*)
 	existe_ciclo_rec grafo (fstnode grafo) [];;
 
 
+
+(*---------------------EJ:2------------------------*)
 (*esiste_ciclo: ’a graph -> ’a -> bool*)
 (*Llamada recursiva para cada hijo no visitado anteriormente a no ser que sea el nodo inicial*)
 
-(*---------------------------------------------------*)
-
-let rec esiste_ciclo_rec grafo init current visitados =
-	iter_list_children  (sucesores grafo current) grafo init current (current::visitados) (*Iteramos sobre los hijos del nodo actual*)
-
-and iter_list_children children grafo init current visitados =
-	match children with
-		| [] -> false
-		| head::tail -> if (List.mem head visitados) then (*El nodo sobre el que iteramos ya esta en la lista*)
-						(
-							if head = init then (*Es el nodo original, por lo tanto hay ciclo*)
-								true 
-							else 
-								iter_list_children tail grafo init current visitados (*No es el original, seguimos iterando*)
-						)
-						else (*No esta en la lista, calculamos sus hijos y iteramos sobre el resto*)
-							(esiste_ciclo_rec grafo init head visitados) || (iter_list_children tail grafo init current visitados)
-;;
-
-let esiste_ciclo grafo init = esiste_ciclo_rec grafo init init []
-;;
-
-(*--------------------------------------------------*)
 (*Devuelve la lista con los hijos que no estan ya visitados*)
 let rec get_new_children hijos visitados =
 	match hijos with
@@ -118,56 +97,24 @@ let rec esiste_ciclo_ grafo nodo original visitados =
 					(get_new_children (sucesores grafo nodo) visitados)  (*Lista de nuevos hijos*)
 ;;
 
-(*---------------------------------------------------*)
-
-(*ciclo: ’a graph -> ’a -> ’a list*)
-(*devuelve el ciclo que hay sobre el nodo a, en caso de no haberlo excepcion*)
-exception NoCycle;;
-
-let rec ciclo_aux grafo nodo_actual visited_path =
-
-	iterar_hijos (sucesores nodo_actual grafo) grafo nodo_actual (visited_path@[nodo_actual]) (*Iteramos sobre los hijos del nodo actual*)
-
-and iterar_hijos hijos grafo nodo_actual  visited_path =
-	match hijos,visited_path with
-	| [],_ -> raise NoCycle
-	| (nodo::resto,original::restpath) -> if nodo = original then
-											visited_path
-										  else if (List.mem nodo visited_path) then
-										  	iterar_hijos resto grafo nodo_actual visited_path
-										  else
-										  	try (ciclo_aux grafo nodo visited_path)
-										  	with _ -> iterar_hijos resto grafo nodo_actual visited_path 
-;;
-
-let ciclo grafo nodo = ciclo_aux grafo nodo [];;
-
-(*------------------------------------------------*)
-(* la funzione non deve riportare un cammino, ma solo un bool: e'
-   sufficiente adattare un algoritmo di visita.
-   Pero' si deve partire dai successori del nodo di partenza, 
-   e non inserire questo inizialmente tra i nodi visitati *)
-
-(* cerca: 'a list -> 'a list -> bool
-   cerca visited listanodi = true se da uno dei nodi in listanodi
-     si puo' raggiungere start senza passare per nodi in visited *)
-let esiste_ciclo grafo start =
-  
-  let rec cerca visited children =  (*lista de hijos*)
-      match children with
-	    | [] -> false
-	    | n::rest ->
-		if List.mem n visited then (*Nodo ya visitado*)
-			cerca visited rest 	   (*Buscamos sobre el resto*)
-		else (*No esta visitado, miramos si es el goal o buscamos añadiendo el nuevo a visitados y concatenando los hijos de este con los que habia pendientes de llamar*)
-			n=start || cerca (n::visited) ((sucesores n grafo)@rest)
-
-  in cerca [] (sucesores start grafo)
+(*----------------------EJ:2bis------------------------*)
+let esiste_ciclo grafo init =
+	let rec busqueda_camino visitados hijos = 
+		match hijos with
+		| [] -> false;
+		| hijo::rest -> 
+							if hijo = (fst visitados) then (* Hay ciclo, hemos encontrado el origen*)
+								true
+						    else if(List.mem hijo visitados) then (* Ya hemos pasado por este nodo, iteramos sobre el rest*)
+						    	busqueda_camino (visitados) (rest)
+						    else  (* seguimos bajando por el nodo y iteramos sobre el  resto *) 
+						    	busqueda_camino (visitados@[hijo]) (sucesores hijo grafo) || 
+						    	busqueda_camino (visitados) (rest)
+	in busqueda_camino [init] (sucesores init grafo)
 ;;
 
 
-
-(*-----------------------------------------*)
+(*-------------------EJ:3profesora-------------------*)
 (* ciclo: ’a graph -> ’a -> ’a list *)
 let ciclo graph start =
     let rec from_node visited n = 
@@ -181,6 +128,113 @@ let ciclo graph start =
           try from_node visited n
           with NotFound -> from_list (n::visited) rest
     in start::from_list [] (successori start graph)
+
+
+(*------------------EJ:3-----------------------*)
+
+
+(* ciclo: ’a graph -> ’a -> ’a list *)
+let fst = (function
+ [] -> failwith "Vacia" 
+| head::tail -> head)
+;;
+
+exception NotFound;;
+
+let ciclo grafo init =
+	let rec busqueda_camino visitados hijos = 
+		match hijos with
+		| [] -> raise NotFound;
+		| hijo::rest -> try
+							if hijo = (fst visitados) then (*Nodo inicial encontrado, devolvemos el path*)
+								(visitados@[hijo])
+						    else if(List.mem hijo visitados) then (*Ya hemos pasado por este nodo, iteramos sobre el rest*)
+						    	busqueda_camino (visitados) (rest)
+						    else (*Bajamos sobre el primer hijo hasta que encontremos la exception*) 
+						    	busqueda_camino (visitados@[hijo]) (sucesores hijo grafo) 
+
+						with	(*No se encuentra el path bajando por este nodo, intentamos con el resto de hijos*)
+						| _ -> busqueda_camino (visitados) (rest)
+
+	in busqueda_camino [init] (sucesores init grafo)
+;;
+
+(*-------------------EJ:4-----------------------*)
+(*Lista de nodos y lista de arcos*)
+type 'a graph_ = ('a list * ('a * 'a) list);;
+let grafo_conexo_ = [1;2;3;4;5;6],
+				   [(1,3);(1,2);(2,3);(3,4);(4,1);(3,5);(3,6);(6,1)];;
+
+let grafo_inconexo_ = [1;2;3;4;5;6;7],
+				   [(1,3);(1,2);(2,3);(3,4);(4,1);(3,5);(3,6);(6,1)];;
+
+let conectados grafo n1 n2 =
+	let rec busqueda_camino hijos visitados =
+		match hijos with
+		| [] -> false
+		| hijo::hermanos -> if hijo = n2 then
+								true
+							else if (List.mem hijo visitados) then (*interamos osbre los hermanos*)
+								busqueda_camino hermanos visitados
+							else (*Bajamos un nivel*)
+								busqueda_camino (vicini hijo grafo) (visitados@[hijo]) || 
+								busqueda_camino hermanos visitados
+
+in busqueda_camino (vicini n1 grafo) [n1]
+;;
+
+let rec grafo_conexo grafo =
+	match grafo with
+	| (head::scd::tail,grafo_aristas) -> (conectados grafo_aristas head scd) 
+									     && grafo_conexo (scd::tail,grafo_aristas)
+	| (_,_)-> true
+;;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

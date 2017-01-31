@@ -86,3 +86,17 @@ let rec gira_dopo_chiusa lst =
 ;;	
 let cassa = Aperta::Chiusa::Chiusa::Aperta::Chiusa::[];;
 
+
+(*-----------------EJ:4------------------*)
+type obj = Miss | Cann | Barca;;
+type situazione = (obj list * obj list);;
+type azione = From_left of obj list | From_right of obj list;;
+
+let initial = ([Miss;Miss;Miss;Cann;Cann;Cann;Barca], []);;
+(*safe: situazione -> bool*)
+let safe sit = 
+	let safe_lat lat = 
+		
+
+in safe_lat ((fun (x,y) -> x)sit) && safe_lat ((fun (x,y) -> y)sit)
+;;
