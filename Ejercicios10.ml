@@ -168,6 +168,7 @@ let grafo_conexo_ = [1;2;3;4;5;6],
 let grafo_inconexo_ = [1;2;3;4;5;6;7],
 				   [(1,3);(1,2);(2,3);(3,4);(4,1);(3,5);(3,6);(6,1)];;
 
+(*dada una lista de grafos y dos nodos dice si estan conectadros entre si*)
 let conectados grafo n1 n2 =
 	let rec busqueda_camino hijos visitados =
 		match hijos with
@@ -189,6 +190,59 @@ let rec grafo_conexo grafo =
 									     && grafo_conexo (scd::tail,grafo_aristas)
 	| (_,_)-> true
 ;;
+(*----------------EJ:5---------------------*)
+(*-------Hacer primero el de la barca------*)
+
+
+
+(*----------------EJ:6---------------------*)
+(*Lista de nodos y lista de arcos*)
+(*cammino: ’a graph -> ’a list -> ’a -> ’a -> ’a list*)
+(*'a list sin repeticiones *)
+
+(*successori : 'a -> 'a graph -> 'a list forma (a,_)*)
+let sucesores nodo grafo =
+	List.map sd (List.filter (fun (x,y) -> x=nodo) grafo)
+;;
+
+type 'a graph_ = ('a list * ('a * 'a) list);;
+let grafo_conexo_ = [1;2;3;4;5;6],
+				   [(1,3);(1,2);(2,3);(3,4);(4,1);(3,5);(3,6);(6,1)];;
+
+let grafo_inconexo_ = [1;2;3;4;5;6;7],
+				   [(1,3);(1,2);(2,3);(3,4);(4,1);(3,5);(3,6);(6,1)];;
+
+(*La idea consiste en ir bajando y removiendo nodos de la lista, si el nodo en el que estamos no esta
+entones lanzamos una excepcion*)
+exception NoPath;;
+
+let get_nodos (nodos,aristas) = nodos;;
+let get_aristas (nodos,aristas) = aristas;;
+
+let camino_aux grafo lista init fin =
+
+	let rec busqueda hijos nodos_por_visitar =
+		match hijos with
+			| [] -> raise NoPath
+			| hijo::hermanos -> 
+								try
+									if hijo = fin then (*Encontrado el nodo que ibamos buscando*)
+										[]
+									else if List.mem hijo nodos_por_visitar then (*Remuevo de la lista y bajo por el mismo nodo, creando la lista que devolveremos*)
+									  hijo::(busqueda (sucesores hijo (get_aristas grafo)) (List.filter (fun x -> x=hijo) lista))
+									else (*Por este camino no se puede continuar, lanzamos la excepcion para que itere sobre el resto*)
+										raise NoPath
+								with
+								| NoPath -> (busqueda hermanos nodos_por_visitar)
+
+	in busqueda (sucesores init grafo)  lista
+;;
+let cammino grafo lista init fin
+
+let lst1 = 1::2::3::6::[];;
+let lst2 = 1::2::6::3::[];;
+
+
 
 
 
