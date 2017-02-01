@@ -212,14 +212,19 @@ let grafo_conexo_ = [1;2;3;4;5;6],
 let grafo_inconexo_ = [1;2;3;4;5;6;7],
 				   [(1,3);(1,2);(2,3);(3,4);(4,1);(3,5);(3,6);(6,1)];;
 
+type 'a graph_ = ('a * 'a) list;;
+let g = [(1,3);(1,2);(2,3);(3,4);(4,1);(3,5);(3,6);(6,1)];;
+
+
 (*La idea consiste en ir bajando y removiendo nodos de la lista, si el nodo en el que estamos no esta
 entones lanzamos una excepcion*)
+(*-------------------A---------------------*)
 exception NoPath;;
 
-let get_nodos (nodos,aristas) = nodos;;
-let get_aristas (nodos,aristas) = aristas;;
+let get_nodos (nodos,_) = nodos;;
+let get_aristas (_,aristas) = aristas;;
 
-let camino_aux grafo lista init fin =
+let camino grafo lista init fin =
 
 	let rec busqueda hijos nodos_por_visitar =
 		match hijos with
@@ -228,8 +233,8 @@ let camino_aux grafo lista init fin =
 								try
 									if hijo = fin then (*Encontrado el nodo que ibamos buscando*)
 										[]
-									else if List.mem hijo nodos_por_visitar then (*Remuevo de la lista y bajo por el mismo nodo, creando la lista que devolveremos*)
-									  hijo::(busqueda (sucesores hijo (get_aristas grafo)) (List.filter (fun x -> x=hijo) lista))
+									else if List.mem hijo nodos_por_visitar then (*Remuevo de la lista y bajo por el mismo nodo*)
+									  hijo::(busqueda (sucesores hijo grafo) (List.filter (fun x -> x=hijo) lista))
 									else (*Por este camino no se puede continuar, lanzamos la excepcion para que itere sobre el resto*)
 										raise NoPath
 								with
@@ -237,10 +242,34 @@ let camino_aux grafo lista init fin =
 
 	in busqueda (sucesores init grafo)  lista
 ;;
-let cammino grafo lista init fin
+
+let camino_grafo_completo grafo lista init fin = camino (get_aristas grafo) lista init fin;;
 
 let lst1 = 1::2::3::6::[];;
 let lst2 = 1::2::6::3::[];;
+
+(*-------------------B---------------------*)
+(*hamiltoniano: 'a graph -> 'a list*)
+(*ver si existe un ciclo entre dos nodos cualquiera que pase una sola vez por todos los nodos*)
+exception NoHamiltoniano;;
+
+let hamiltoniano grafo_nodos grafo_aristas  =
+	
+	(*Itera hacia abajo hasta la excepcion, luego con los hermano, termina cuando se han acabado todos los nodos*)
+	let rec busqueda hijos nodos_restantes path_aux =
+		match hijos with
+		| [] -> raise NoHamiltoniano
+		| hijo::hermanos -> try 					
+							with _ ->
+									(busqueda hermanos init nodos_restantes)
+																  (*Iniciamos la lista sin el primer nodo*)
+	in busqueda (sucesores (fstnode grafo_aristas) grafo_aristas) (grafo_nodos) [(fstnode grafo_aristas)] 
+;;
+
+let ham grafo = hamiltoniano (get_nodos grafo) (get_aristas grafo);;
+
+let l1 = [1;2;3;4],[(1,2);(2,3);(3,4);(4,1)];;
+
 
 
 
