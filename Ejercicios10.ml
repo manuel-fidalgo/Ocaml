@@ -259,9 +259,18 @@ let hamiltoniano grafo_nodos grafo_aristas  =
 	let rec busqueda hijos nodos_restantes path_aux =
 		match hijos with
 		| [] -> raise NoHamiltoniano
-		| hijo::hermanos -> try 					
+		| hijo::hermanos -> try
+								if (List.length nodos_restantes = 1) then
+									path_aux@[hijo]
+
+								else if (List.mem hijo path_aux) then (*Nodo repedido, iteramos sobre los hermanos*)
+									(busqueda hermanos nodos_restantes path_aux) 
+
+								else (*Seguimos bajando por el arbol*)
+									(busqueda (sucesores hijo grafo_aristas) (List.filter (fun x -> x<>hijo) nodos_restantes) (path_aux@[hijo]))
+
 							with _ ->
-									(busqueda hermanos init nodos_restantes)
+									(busqueda hermanos nodos_restantes path_aux)
 																  (*Iniciamos la lista sin el primer nodo*)
 	in busqueda (sucesores (fstnode grafo_aristas) grafo_aristas) (grafo_nodos) [(fstnode grafo_aristas)] 
 ;;
@@ -269,6 +278,9 @@ let hamiltoniano grafo_nodos grafo_aristas  =
 let ham grafo = hamiltoniano (get_nodos grafo) (get_aristas grafo);;
 
 let l1 = [1;2;3;4],[(1,2);(2,3);(3,4);(4,1)];;
+let l2 = [1;2;3;4;5],[(1,2);(2,3);(2,4);(4,5);(5,1)];;
+let l3 = [1;2;3;4],[(1,2);(2,3);(3,4);(4,1);(2,4);(1,3)];;
+
 
 
 
