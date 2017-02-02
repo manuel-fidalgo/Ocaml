@@ -282,6 +282,86 @@ let l2 = [1;2;3;4;5],[(1,2);(2,3);(2,4);(4,5);(5,1)];;
 let l3 = [1;2;3;4],[(1,2);(2,3);(3,4);(4,1);(2,4);(1,3)];;
 
 
+(*-------------------EJ:8---------------------*)
+(* Para cualquier grafo de la lista existe un camino de a->b ó b->a *)
+
+(*'a graph -> 'a -> 'a -> bool*)
+let camino_de_a grafo init goal =
+	let rec busqueda_camino hijos visitados=
+		match hijos with
+		| [] -> false
+		| hijo::hermanos -> if (hijo = goal) then 
+								true
+							else if (List.mem hijo visitados) then
+								busqueda_camino hermanos visitados
+							else
+								busqueda_camino (sucesores hijo grafo) (visitados@[hijo]) || 
+								busqueda_camino hermanos visitados
+
+    in busqueda_camino (sucesores init grafo) [init]
+;;
+(*'a graph -> 'a -> 'a -> bool*)
+let camino_entre grafo a b =
+	camino_de_a grafo a b || camino_de_a grafo b a
+;;
+(* connessi_in_glist: ’a graph list -> ’a -> ’a -> bool *)
+let connessi_in_glist lst init goal =
+	List.for_all (fun x -> camino_entre x init goal) lst
+;;
+(*-------------------EJ:11-----------------------*)
+
+exception NoPath;;
+(*is_primo int -> bool*)
+let is_primo num = 
+	let rec divisiones num iter =
+		if iter <= 1 then 
+			true
+		else ((num mod iter) <> 0) && (divisiones num (iter-1))
+	in divisiones num (num-1) 
+;;
+
+(* cammino_di_primi: int graph -> int-> int -> int list *)
+let cammino_di_primi grafo init goal =
+	let rec busqueda_camino hijos visitados=
+		match hijos with
+		| [] -> raise NoPath
+		| hijo::hermanos -> try 
+								if (hijo = goal) then 
+									visitados
+								else if (List.mem hijo visitados) || not (is_primo hijo) then
+									busqueda_camino hermanos visitados
+								else
+									busqueda_camino (sucesores hijo grafo) (visitados@[hijo])
+							with _ ->
+								busqueda_camino hermanos visitados
+
+    in busqueda_camino (sucesores init grafo) [init]
+;;
+
+let l = [(1,3);(3,5);(5,7);(5,8);(8,13);(7,13);(13,1);(1,5)];;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
