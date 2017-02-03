@@ -96,26 +96,30 @@ let rec esiste_ciclo_ grafo nodo original visitados =
 		List.exists (fun x -> esiste_ciclo_ grafo x original (nodo::visitados)) (*Predicado*) 
 					(get_new_children (sucesores grafo nodo) visitados)  (*Lista de nuevos hijos*)
 ;;
-
+let first_list lst = 
+	match lst with
+	| [] -> failwith "yksetio"
+	| head::tail -> head
+;;
 (*----------------------EJ:2bis------------------------*)
 let esiste_ciclo grafo init =
 	let rec busqueda_camino visitados hijos = 
 		match hijos with
-		| [] -> false;
+		| [] -> false
 		| hijo::rest -> 
-							if hijo = (fst visitados) then (* Hay ciclo, hemos encontrado el origen*)
+							if hijo = (first_list visitados) then (* Hay ciclo, hemos encontrado el origen*)
 								true
 						    else if(List.mem hijo visitados) then (* Ya hemos pasado por este nodo, iteramos sobre el rest*)
-						    	busqueda_camino (visitados) (rest)
+						    	(busqueda_camino visitados rest)
 						    else  (* seguimos bajando por el nodo y iteramos sobre el  resto *) 
-						    	busqueda_camino (visitados@[hijo]) (sucesores hijo grafo) || 
-						    	busqueda_camino (visitados) (rest)
+						    	(busqueda_camino (visitados@[hijo]) (sucesores hijo grafo)) || 
+						    	(busqueda_camino visitados  rest)
 	in busqueda_camino [init] (sucesores init grafo)
 ;;
-
-
-(*-------------------EJ:3profesora-------------------*)
+let g = [(1,2);(2,3);(3,4);(4,2);(3,1)];;
+(*------------------- EJ:3profesora-------------------*)
 (* ciclo: ’a graph -> ’a -> ’a list *)
+
 let ciclo graph start =
     let rec from_node visited n = 
       if List.mem n visited 
@@ -129,9 +133,7 @@ let ciclo graph start =
           with NotFound -> from_list (n::visited) rest
     in start::from_list [] (successori start graph)
 
-
 (*------------------EJ:3-----------------------*)
-
 
 (* ciclo: ’a graph -> ’a -> ’a list *)
 let fst = (function
@@ -143,8 +145,9 @@ exception NotFound;;
 
 let ciclo grafo init =
 	let rec busqueda_camino visitados hijos = 
+		
 		match hijos with
-		| [] -> raise NotFound;
+		| [] -> raise Not_Found;
 		| hijo::rest -> try
 							if hijo = (fst visitados) then (*Nodo inicial encontrado, devolvemos el path*)
 								(visitados@[hijo])
@@ -322,12 +325,13 @@ let is_primo num =
 
 (* cammino_di_primi: int graph -> int-> int -> int list *)
 let cammino_di_primi grafo init goal =
+
 	let rec busqueda_camino hijos visitados=
 		match hijos with
 		| [] -> raise NoPath
 		| hijo::hermanos -> try 
 								if (hijo = goal) then 
-									visitados
+									(visitados@[goal])
 								else if (List.mem hijo visitados) || not (is_primo hijo) then
 									busqueda_camino hermanos visitados
 								else
@@ -340,60 +344,82 @@ let cammino_di_primi grafo init goal =
 
 let l = [(1,3);(3,5);(5,7);(5,8);(8,13);(7,13);(13,1);(1,5)];;
 
+(*
+(Dal compito d’esame di giugno 2011). Definire una funzione path_n_p:
+’a graph -> (’a -> bool) -> int -> ’a -> ’a list, che, applicata
+a un grafo orientato g, un predicato p: ’a -> bool, un intero n e un
+nodo start, riporti, se esiste, un cammino non ciclico da start fino a un
+nodo x che soddisfa p e che contenga esattamente n nodi che soddisfano
+p (incluso x). La funzione solleverà un’eccezione se un tale cammino non
+esiste.
+4
+Ad esempio, sia pari: int -> bool definito in modo tale che pari x è vero
+se e solo se x è pari e g = [(1,3);(2,6);(3,4);(3,5);(3,6);(4,2);
+(4,5);(5,4);(6,5)]. Allora, path_n_p g pari 2 1 può avere uno dei
+valori seguenti: [1;3;4;2], [1;3;5;4;2], [1;3;6;5;4].
+*)
 
+(*--------------------------------------------------*)
+type 'a graph = ('a * 'a) list;;
 
+let fs (x,_) = x;;
+let sd (_,y) = y;;
 
+(*successori : 'a -> 'a graph -> 'a list forma (a,_)*)
+let sucesores nodo grafo =
+	List.map sd (List.filter (fun (x,y) -> x=nodo) grafo)
+;;
+let par x = (x mod 2) = 0;;
 
+let a = (1,2)::(2,3)::(3,4)::(4,1)::[];;
+let b = [(1,4);(2,4);(3,4);(4,5)];;
+let c = [(1,4);(2,4);(3,4);(4,5);(5,6);(6,7);(7,1)];;
+let d = [(1,3);(1,2);(2,3);(3,4);(4,1);(3,5);(3,6);(6,1)];;
 
+let rec print_list = function 
+[] -> ()
+| e::l -> print_int e ; print_string " " ; print_list l
+;;
+let print_fam hijo hermanos =
+	print_string "Hijo-> ";
+	print_int hijo;
+	print_string " Herm-> ";
+	print_list hermanos;
+	print_newline ();
+;;
+(*---------------------EJ13-------------------------*)
+exception NoPath;;
 
+(* path_n_p: ’a graph -> (’a -> bool) -> int -> ’a -> ’a list *)
+let path_n_p grafo p n init =
 
+	let rec busqueda hijos visitados faltan =
+		match hijos with
+		| [] -> raise NoPath
+		| hijo::hermanos -> try 
+								(print_fam hijo visitados); (*For debug*)
 
+								if (faltan=0) then
+								(*Tenemos todos los que cumplen, path*)
+									visitados
+								else if(List.mem hijo visitados) then 
+								(*Ya visitado, formaria ciclo, no interesa*)
+									(busqueda hermanos visitados faltan) 
+								else if (p hijo) then
+								(*Cumple el predicado, (n-1) y buscamos abajo*)
+									busqueda (sucesores hijo grafo) 
+											 (visitados@[hijo])
+											 (faltan-1)
+								else
+									(*No cumple el predicado, seguimos bajando*)
+									busqueda (sucesores hijo grafo) 
+											 (visitados@[hijo])
+											 (faltan)
+							with NoPath ->
+								(busqueda hermanos visitados faltan)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    in busqueda (sucesores init grafo) [init] n
+;;
 
 
 
