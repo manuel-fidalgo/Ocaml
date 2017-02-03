@@ -284,3 +284,36 @@ path_non_pred (fun x -> (x mod 2) = 0) l;; (*[1;3;5]*)
 path_non_pred (fun x -> (x mod 2) = 1) l;; (*NoPath*)
 
 
+
+(*
+	ramo_da_lista: 'a ntree -> 'a list -> 'a -> 'a list
+	
+	Scrivere una funzione ramo_da_lista: ’a ntree -> ’a list -> ’a ->
+	’a list che, dato un albero T, una lista L senza ripetizioni e un’etichetta
+	k, riporti, se esiste, un ramo di T dalla radice a una foglia etichettata da k
+	che passi per tutti gli elementi di L esattamente una volta e contenga solo
+	nodi etichettati da elementi di L (in pratica, il cammino deve essere una
+	permutazione di L). Se un tale cammino non esiste, la funzione solleverà
+	un’eccezione.
+*)
+type 'a tree = Ntree of 'a * 'a tree list;;
+exception Exp;;
+
+let ramo_da_lista tree lista goal =
+	
+	let rec ramo_da_lista_aux tree lista goal visitados =
+		match tree with
+		| Ntree(x,[]) -> raise Exp
+		| Ntree(x,hijos)-> if (List.mem x lista)
+								
+
+	and iter hijos lista goal visitados=
+	match hijos with
+	| [] -> []
+	| head::tail -> try
+						ramo_da_lista_aux head
+					with
+					| _ -> iter tail lista goal visitados
+
+in ramo_da_lista_aux tree lista goal [];;
+
