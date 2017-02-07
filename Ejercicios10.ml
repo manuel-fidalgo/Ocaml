@@ -445,26 +445,29 @@ exception NoPath;;
 
 let cammino_nodi grafo init lista =
 	
-	let busqueda_aux hijos lista visitados = (*guardar registro de los visitados evita el ciclo*)
+	let rec busqueda_aux hijos lista visitados = (*guardar registro de los visitados evita el ciclo*)
 		match hijos with
 		| [] -> raise NoPath
 		| hijo::hermanos -> try
-								if (List.mem hijo visitados) then (*Hay un ciclo*)
+
+								if ((List.length lista) = 0) then (*Lista esta vacia, hemos pasado por todos*)
+									visitados
+								else if (List.mem hijo visitados) then (*Hay un ciclo*)
 									raise NoPath
 								else if (List.mem hijo lista) then (*No hay ciclo, miramos si esta en la lista, lo quitamos y bajamos*)
 									busqueda_aux (sucesores hijo grafo) (List.filter (fun x -> x<> hijo) lista) (visitados@[hijo])
 								else (*No hay ciclo, seguimos bajando por el nodo sin quitarlo de la lista ya que no esta*)
 									busqueda_aux (sucesores hijo grafo) lista (visitados@[hijo])
-
+									(**)
 							with
-							| NoPath -> busqueda_aux hermanos visitados
+							| NoPath -> busqueda_aux hermanos lista visitados
 							| _ -> failwith "Another exception"
 
 	in busqueda_aux (sucesores init grafo) lista [init]
 ;;
 
 
-
+let lst1 = [3;6];;
 
 
 
