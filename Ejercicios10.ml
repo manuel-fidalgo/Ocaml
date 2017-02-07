@@ -421,7 +421,47 @@ let path_n_p grafo p n init =
     in busqueda (sucesores init grafo) [init] n
 ;;
 
+(*----------------EJ:9-------------------*)
+type 'a graph = ('a * 'a) list;;
 
+let fs (x,_) = x;;
+let sd (_,y) = y;;
+
+(*successori : 'a -> 'a graph -> 'a list forma (a,_)*)
+let sucesores nodo grafo =
+	List.map sd (List.filter (fun (x,y) -> x=nodo) grafo)
+;;
+let d = [(1,3);(1,2);(2,3);(3,4);(4,1);(3,5);(3,6);(6,1)];;
+(*
+	Scrivere un programma con
+	una funzione cammino_con_nodi: ’a graph -> ’a -> ’a list -> ’a list
+	list che, dato un grafo orientato G, un nodo N di G e una lista L senza
+	ripetizioni, restituisca, se esiste, un cammino senza cicli che, partendo
+	da N, contenga tutti i nodi di L (in qualsiasi ordine) ed eventualmente
+	anche altri nodi. Se un tale cammino non esiste, il programma solleverà
+	un’eccezione.
+*)
+exception NoPath;;
+
+let cammino_nodi grafo init lista =
+	
+	let busqueda_aux hijos lista visitados = (*guardar registro de los visitados evita el ciclo*)
+		match hijos with
+		| [] -> raise NoPath
+		| hijo::hermanos -> try
+								if (List.mem hijo visitados) then (*Hay un ciclo*)
+									raise NoPath
+								else if (List.mem hijo lista) then (*No hay ciclo, miramos si esta en la lista, lo quitamos y bajamos*)
+									busqueda_aux (sucesores hijo grafo) (List.filter (fun x -> x<> hijo) lista) (visitados@[hijo])
+								else (*No hay ciclo, seguimos bajando por el nodo sin quitarlo de la lista ya que no esta*)
+									busqueda_aux (sucesores hijo grafo) lista (visitados@[hijo])
+
+							with
+							| NoPath -> busqueda_aux hermanos visitados
+							| _ -> failwith "Another exception"
+
+	in busqueda_aux (sucesores init grafo) lista [init]
+;;
 
 
 
